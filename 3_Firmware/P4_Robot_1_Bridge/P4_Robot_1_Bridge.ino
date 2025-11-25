@@ -53,6 +53,21 @@ void setup() {
 }
 
 void loop() {
+
+/*
+  acende_0(200);
+  acende_1(200);
+  acende_2(200);
+  acende_3(200);
+  acende_blue();
+  delay(500);
+  apaga_0();
+  apaga_1();
+  apaga_2();
+  apaga_3();
+  apaga_blue();
+  delay(500);
+  */
   if (radio.available()) {
     radio.read(&data, sizeof(data));
     

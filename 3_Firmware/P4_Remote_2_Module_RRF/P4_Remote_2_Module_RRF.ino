@@ -48,7 +48,9 @@ void setup() {
   radio.stopListening();
 }
 
+int aux=0;
 void loop() {
+/*  
   data.button2_state = digitalRead(BUTTON_2);
   data.button3_state = digitalRead(BUTTON_3);
   data.button4_state = digitalRead(BUTTON_4);
@@ -57,6 +59,24 @@ void loop() {
   data.outputValue0 = map(sensorValue0, 0, 1023, 0, 255);
   sensorValue1 = analogRead(POT_1);
   data.outputValue1 = map(sensorValue1, 0, 1023, 0, 255);
+*/
+
+if(aux==0) {
+  data.button2_state = 0;
+  data.button3_state = 0;
+  data.button4_state = 1;
+  data.outputValue0 = 0;
+  data.outputValue1 = 0;
+  aux=1;
+}
+else {
+  data.button2_state = 1;
+  data.button3_state = 0;
+  data.button4_state = 1;
+  data.outputValue0 = 250;
+  data.outputValue1 = 250;
+  aux=0;
+}
   
   radio.write(&data, sizeof(data));
 
@@ -81,7 +101,7 @@ void loop() {
   Wire.endTransmission();    // stop transmitting
   // Fim trecho novo - com Wire
   
-  delay(200);
+  delay(500);
 }
 
 
