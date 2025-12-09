@@ -1,6 +1,7 @@
-// RF Transmitter test
-// Pancho 3: roboh radiocontrolado
-// Codigo do Controle
+//////////////////////////////////////////////
+// Pancho 4: roboh radiocontrolado 
+// Modulo do Console, Comms RRF (I2C slave)
+//////////////////////////////////////////////
 #include <SPI.h>
 #include <nRF24L01.h>
 #include <RF24.h>
@@ -23,6 +24,8 @@ int BUTTON_4 = A4;
 int POT_0    = A0;
 int POT_1    = A1;
 
+int LEDBLUE = 4;
+
 int sensorValue0;
 int sensorValue1;
 
@@ -37,8 +40,10 @@ struct Data_Package {
 void setup() {
 
   // Segue trecho novo - com Wire
-  Wire.begin(); // join i2c bus (address optional for master)
+  Wire.begin(8);                // join i2c bus with address #8
+  Wire.onReceive(receiveEvent);
   // Fim trecho novo - com Wire
+  pinMode(LEDBLUE, OUTPUT);
   
   pinMode(BUTTON_2, INPUT);
   Serial.begin(9600);
@@ -46,6 +51,19 @@ void setup() {
   radio.openWritingPipe(address);
   radio.setPALevel(RF24_PA_MIN);
   radio.stopListening();
+}
+
+byte c;
+void receiveEvent(int howMany) {
+   c = Wire.read(); // receive a character
+   if(c == 0){
+     // do nothing
+     digitalWrite(LEDBLUE, LOW);
+   }//byte c
+   if(c == 1){
+     //play_song();
+     digitalWrite(LEDBLUE, HIGH);
+   }
 }
 
 int aux=0;
@@ -88,17 +106,17 @@ else {
   Serial.print(data.button4_state);
   Serial.print(" - volante: ");
   Serial.print(data.outputValue0);
-  Serial.print(" - aceler: ");
+  Serial.print(" - aceler: ");       // Isadora
   Serial.print(data.outputValue1);
   Serial.println(" * ");
 
   // Segue trecho novo - com Wire
-  Wire.beginTransmission(8); // transmit to device #8
+  //Wire.beginTransmission(8); // transmit to device #8
   // Central de decisao
-  state = 1;  // Default
-  if (data.button2_state == HIGH) state = 2;
-  Wire.write(state);         // sends one byte
-  Wire.endTransmission();    // stop transmitting
+  //state = 1;  // Default
+  //if (data.button2_state == HIGH) state = 2;
+  //Wire.write(state);         // sends one byte
+  //Wire.endTransmission();    // stop transmitting
   // Fim trecho novo - com Wire
   
   delay(500);

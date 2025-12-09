@@ -1,4 +1,4 @@
-// RF Receiver test
+// RF Receiver (slave) test
 // Pancho 4: robot radiocontrolado
 // Codigo do Robot
 
