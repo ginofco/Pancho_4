@@ -1,6 +1,6 @@
 //////////////////////////////////////////////
 // Pancho 4: roboh radiocontrolado 
-// Modulo do Console, Modulo PS2 (I2C master)
+// Console, Modulo PS2 (I2C master)
 //////////////////////////////////////////////
 #include <SPI.h>
 #include <PS2X_lib.h>
@@ -8,6 +8,8 @@
 // Segue trecho novo - com Wire
 #include <Wire.h>
 byte state = 0; // Robot state:  (Variavel global usada para comunicacao i2c.)
+// Definir o endereço I2C do escravo
+#define SLAVE_ADDRESS 0x08
 // Fim trecho novo - com Wire
 
 PS2X ps2x; // create PS2 Controller Class
@@ -16,68 +18,81 @@ int error = 0;
 byte type = 0;
 byte vibrate = 0;
 
-struct Data_Package {
+struct DataPackage {
   int button2_state;
   int button3_state;
   int button4_state;
   int outputValue0;
   int outputValue1;
-} data;
+} dataToSend;
+const int PACKAGE_SIZE = sizeof(DataPackage);
 
 void setup(){
  Serial.begin(57600);
- 
  // Segue trecho novo - com Wire
  Wire.begin(); // join i2c bus (address optional for master)
  // Fim trecho novo - com Wire
-   
  error = ps2x.config_gamepad(13,11,10,12, true, true);   //setup pins and settings:  GamePad(clock, command, attention, data, Pressures?, Rumble?) check for error
- if(error == 0){
-   Serial.println("Found Controller, configured successful");
- }
-  else if(error == 1)
-   Serial.println("No controller found, check wiring, see readme.txt to enable debug. visit www.billporter.info for troubleshooting tips");
-  else if(error == 2)
-   Serial.println("Controller found but not accepting commands. see readme.txt to enable debug. Visit www.billporter.info for troubleshooting tips");
-  else if(error == 3)
-   Serial.println("Controller refusing to enter Pressures mode, may not support it. ");
+ if(error == 0) Serial.println("Found Controller, configured successful");
+  else if(error == 1) Serial.println("No controller found, check wiring, ");
+  else if(error == 2) Serial.println("Controller found but not accepting commands");
+  else if(error == 3) Serial.println("Controller refusing to enter Pressures mode.");
 }
 
 void loop(){
  if(error == 1) // No controller found
   return; 
  else { 
-  ps2x.read_gamepad(false, vibrate);          //read controller and set large motor to spin at 'vibrate' speed
+  ps2x.read_gamepad(false, vibrate);  //read controller, set'vibrate' speed
 
-  data.button2_state = ps2x.Button(PSB_BLUE);
-  data.button3_state = ps2x.Button(PSB_PAD_UP);
-  data.button4_state = ps2x.Button(PSB_PAD_DOWN);
-  data.outputValue0  = ps2x.Analog(PSS_RX);
-  data.outputValue1  = ps2x.Analog(PSS_RY);
+  dataToSend.button2_state = ps2x.Button(PSB_BLUE);
+  dataToSend.button3_state = ps2x.Button(PSB_PAD_UP);
+  dataToSend.button4_state = ps2x.Button(PSB_PAD_DOWN);
+  dataToSend.outputValue0  = ps2x.Analog(PSS_RX);
+  dataToSend.outputValue1  = ps2x.Analog(PSS_RY);
 
   Serial.print("Transmissor. Mensagem: luz: ");
-  Serial.print(data.button2_state);
+  Serial.print(dataToSend.button2_state);
   Serial.print(" - direcao1: ");
-  Serial.print(data.button3_state);
+  Serial.print(dataToSend.button3_state);
   Serial.print(" - direcao2:");
-  Serial.print(data.button4_state);
+  Serial.print(dataToSend.button4_state);
   Serial.print(" - volante: ");
-  Serial.print(data.outputValue0);
+  Serial.print(dataToSend.outputValue0);
   Serial.print(" - aceler: ");
-  Serial.print(data.outputValue1);
+  Serial.print(dataToSend.outputValue1);
   Serial.println(" * ");
+  
+  // Transmitir dados via I2C
+  transmitData();
 
+  /*
   // Segue trecho novo - com Wire
-  Wire.beginTransmission(8); // transmit to device #8
-  // Central de decisao
+  Wire.beginTransmission(SLAVE_ADDRESS); // transmit to device #8
+  // Envia estrutura de dados 'data'
   state = 0;  // Default
-  if (ps2x.NewButtonState(PSB_BLUE)) state = 1;
-  Wire.write(state);         // sends one byte
+  if (ps2x.NewButtonState(PSB_BLUE)) state = 1; 
+  //Wire.write(state);         // sends one byte
+  Wire.write(data);
   Wire.endTransmission();    // stop transmitting
   // Fim trecho novo - com Wire
+  */
  }
  
- delay(50);   
+ delay(50);
+}
+
+void transmitData() {
+  Wire.beginTransmission(SLAVE_ADDRESS);
+  // Envia byte a byte da estrutura
+  uint8_t *dataPtr = (uint8_t*)&dataToSend;
+  for(size_t i = 0; i < PACKAGE_SIZE; i++) {
+    Wire.write(dataPtr[i]);
+  }
+  byte error = Wire.endTransmission();
+  //if(error == 0) {
+  //  Serial.println("Dados enviados com sucesso!");
+  //}
 }
 
 
