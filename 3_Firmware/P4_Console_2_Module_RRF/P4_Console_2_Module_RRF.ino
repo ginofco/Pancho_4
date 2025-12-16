@@ -9,10 +9,10 @@
 #define SLAVE_ADDRESS 0x08
 #include <Wire.h>
 
-int error = 0; 
-RF24 radio(8,7);  // create controle via NRF24L01
-const byte address[6] = "ROBOT";
+RF24 radio(8,7);                  // canal de rádio via NRF24L01
+const byte address[6] = "ROBOT";  // identificador da rádio
 
+int error = 0; 
 int LEDBLUE = 4;
 
 struct DataPackage {
@@ -28,11 +28,15 @@ DataPackage receivedData;
 void setup() {
   Wire.begin(SLAVE_ADDRESS); // join i2c bus with address #8
   Wire.onReceive(receiveData); // Registra callback para recepção de dados
-     // Opcional: callback para quando o mestre solicitar dados
-     // Wire.onRequest(sendResponse);
+  // Opcional: callback
+  // Wire.onRequest(sendResponse);
+     
   Serial.println("Escravo I2C pronto no endereço 0x08");
+  
   pinMode(LEDBLUE, OUTPUT);
+  
   Serial.begin(9600);
+  
   radio.begin();
   radio.openWritingPipe(address);
   radio.setPALevel(RF24_PA_MIN);

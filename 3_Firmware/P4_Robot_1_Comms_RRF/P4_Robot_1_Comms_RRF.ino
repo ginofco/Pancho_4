@@ -7,17 +7,18 @@
 #include <RF24.h>
 
 #include <Wire.h>
-byte state = 0;
 
+// pinos PWM para controle do "motor"
 #define dirFrente 5
-#define dirTras 3
+#define dirTras   3
 #define esqFrente 6
-#define esqTras 9
+#define esqTras   9
+#define LEDBLUE   2
 
-RF24 radio(8,7);
+RF24 radio(8,7);                  // canal de rádio via NRF24L01
+const byte address[6] = "ROBOT";  // identificador da rádio
 
-const byte address[6] = "ROBOT";
-int LEDBLUE = 2;
+byte state = 0;
 
 int volante;
 int buzina;
@@ -25,7 +26,7 @@ int marcha_frente;
 int marcha_tras;
 int velocidade;
 
-struct Data_Package {
+struct DataPackage {
   int button2_state;
   int button3_state;
   int button4_state;
@@ -36,12 +37,12 @@ struct Data_Package {
 void setup() {
   Wire.begin(); // join i2c bus (address optional for master)
   
-  pinMode(esqFrente, OUTPUT);
-  pinMode(esqTras, OUTPUT);
-  pinMode(dirTras, OUTPUT);
+  pinMode(esqFrente, OUTPUT);  // Pinos PWM para "motores"
+  pinMode(esqTras,   OUTPUT);
+  pinMode(dirTras,   OUTPUT);
   pinMode(dirFrente, OUTPUT);
 
-  pinMode(LEDBLUE, OUTPUT);
+  pinMode(LEDBLUE,   OUTPUT);
   
   Serial.begin(9600);
   Serial.println("Entrei");
