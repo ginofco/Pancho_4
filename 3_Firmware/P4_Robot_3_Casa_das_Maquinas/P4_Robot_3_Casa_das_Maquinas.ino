@@ -5,13 +5,14 @@
 
 #define dirFrente 5
 #define dirTras 3
-#define esqFrente 6
-#define esqTras 9
+#define esqFrente 9
+#define esqTras 6
 
 int volante;
 int marcha_frente;
 int marcha_tras;
 int velocidade;
+int comando;
 
 void setup() {
   // put your setup code here, to run once:
@@ -22,12 +23,39 @@ void setup() {
   pinMode(dirTras, OUTPUT);
   pinMode(dirFrente, OUTPUT);
 }
-
+int i=0;
 void loop() {
-  // put your main code here, to run repeatedly:
-  velocidade = 200;
-
   
+  velocidade = 200;
+  
+  comando = i;
+  i++;
+  if (i>6) i=0;
+
+  switch(comando) {
+    case 0:
+      apaga_todos();
+      break;
+    case 1:
+      move_p_frente(velocidade);
+      break;
+    case 2:
+      move_p_esquerda_frente(velocidade);
+      break;
+    case 3:
+      move_p_direita_frente(velocidade);
+      break;
+    case 4:
+      move_p_tras(velocidade);
+      break;
+    case 5:
+      move_p_esquerda_tras(velocidade);
+      break;
+    case 6:
+      move_p_direita_tras(velocidade);
+      break;
+  }
+  delay(1000);apaga_todos();delay(1000);
 
 }
 
@@ -101,10 +129,10 @@ void apaga_2() {
 void apaga_3() {
   digitalWrite(dirFrente, LOW);
 }
-
+/*
 void acende_blue() {
   digitalWrite(LEDBLUE, HIGH);
 }
 void apaga_blue() {
   digitalWrite(LEDBLUE, LOW);
-}
+}*/
