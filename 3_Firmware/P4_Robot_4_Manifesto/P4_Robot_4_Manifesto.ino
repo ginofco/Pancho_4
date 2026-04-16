@@ -1,11 +1,8 @@
-/*
-  Melody- Plays a melody
-  circuit:  - 8 ohm speaker on digital pin 8
-  created 21 Jan 2010  modified 30 Aug 2011
-  by Tom Igoe
-  This example code is in the public domain.
-  https://www.arduino.cc/en/Tutorial/Tone
-*/
+// Pancho 4: robot radiocontrolado
+// Codigo do Robot - Módulo "Manifesto"
+// I2C Slave
+// https://www.arduino.cc/en/Tutorial/Tone
+
 #include <Wire.h>
 #include "pitches.h"
 #define LEDBLUE 8
@@ -17,7 +14,7 @@
 int volante;
 int marcha_frente;
 int marcha_tras;
-int velocidade;
+int velocidade=200;
 int comando;
 
 // notes in the melody:
@@ -30,7 +27,8 @@ int noteDurations[] = {
 };
 
 void setup() {
-  //play_song();
+  Serial.begin(9600);
+  Serial.println("Pancho 4 - Manifesto: ativado.");
   Wire.begin(8);                // join i2c bus with address #8
   Wire.onReceive(receiveEvent);
   pinMode(esqFrente, OUTPUT);
@@ -39,26 +37,21 @@ void setup() {
   pinMode(dirFrente, OUTPUT);
   pinMode(LEDBLUE, OUTPUT);
 }
-
+byte c1=0;
 byte c=0;
 void receiveEvent(int howMany) {
-   c = Wire.read(); // receive a character
-   /*if(c == 0){
-     // do nothing
-   }
-   if(c == 1){
-     play_song();
-   }*/
+   c = Wire.read();
 }
 
 void loop() {
-  // no need to repeat the melody
   /*if(c == 0){
      // do nothing
    }
    if(c == 1){
      play_song();
    }*/
+   Serial.print("Pancho 4 - c = ");
+   Serial.println(c);
 
    switch(c) {
     case 0:
@@ -82,7 +75,6 @@ void loop() {
     case 6:
       move_p_direita_tras(velocidade);
       break;
-
     case 8:
       //play_song();
       acende_blue();
@@ -92,6 +84,7 @@ void loop() {
       apaga_blue();
       break;
   }
+  //c++; delay(500);
 }
 
 void play_song() {
