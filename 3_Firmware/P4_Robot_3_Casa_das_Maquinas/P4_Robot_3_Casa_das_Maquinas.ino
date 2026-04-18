@@ -25,7 +25,7 @@ void setup() {
 }
 int i=0;
 void loop() {
-  
+  /*
   velocidade = 200;
   
   comando = i;
@@ -56,7 +56,7 @@ void loop() {
       break;
   }
   delay(1000);apaga_todos();delay(1000);
-
+*/
 }
 
 
