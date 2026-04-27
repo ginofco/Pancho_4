@@ -34,13 +34,6 @@ void loop() {
     Serial.print(" - Velocidade: ");
     Serial.print(dataToSend_Manifesto.velocidade);
     Serial.println(" ");
-    /*
-    Wire.beginTransmission(8); // transmit to device #8
-    state = 9;  // Default
-    if (dataToSend_Manifesto.buzina == 1) state = 8;
-    Wire.write(state);         // sends one byte
-    Wire.endTransmission();
-    delay(500);*/
 
     transmitData_Manifesto();
 

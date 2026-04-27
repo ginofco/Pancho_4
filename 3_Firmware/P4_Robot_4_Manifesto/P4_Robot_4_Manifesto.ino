@@ -3,6 +3,7 @@
 // I2C Slave
 // https://www.arduino.cc/en/Tutorial/Tone
 
+#define SLAVE_ADDRESS 0x08
 #include <Wire.h>
 #include "pitches.h"
 #define LEDBLUE 8
@@ -26,11 +27,21 @@ int noteDurations[] = {
   4, 8, 8, 4, 4, 4, 4, 4
 };
 
+struct DataPackage {
+  int buzina;
+  int controle_motores;
+  int velocidade;
+} receivedData;
+const int PACKAGE_SIZE = sizeof(DataPackage);
+
 void setup() {
   Serial.begin(9600);
   Serial.println("Pancho 4 - Manifesto: ativado.");
-  Wire.begin(8);                // join i2c bus with address #8
-  Wire.onReceive(receiveEvent);
+
+  Wire.begin(SLAVE_ADDRESS);    // join i2c bus with address #8
+  //Wire.onReceive(receiveEvent);
+  Wire.onReceive(receiveData);
+  
   pinMode(esqFrente, OUTPUT);
   pinMode(esqTras, OUTPUT);
   pinMode(dirTras, OUTPUT);
@@ -39,20 +50,40 @@ void setup() {
 }
 byte c1=0;
 byte c=0;
-void receiveEvent(int howMany) {
-   c = Wire.read();
+//void receiveEvent(int howMany) {
+//   c = Wire.read();
+//}
+
+// Função chamada quando dados são recebidos do mestre
+void receiveData(int byteCount) {
+  if(byteCount == PACKAGE_SIZE) {
+    uint8_t *dataPtr = (uint8_t*)&receivedData;
+    for(int i = 0; i < PACKAGE_SIZE && Wire.available(); i++) {
+      dataPtr[i] = Wire.read();
+    }
+    // Processar dados recebidos
+    processReceivedData();
+  } else {
+    Serial.print("Tamanho inesperado: ");
+    Serial.println(byteCount);
+  }
+}
+
+void processReceivedData() {
+  //Serial.println("\n=== Dados Recebidos ===");
+  Serial.print("Modulo Manifesto. Mensagem: velocidade: ");
+  Serial.print(receivedData.velocidade);
+  Serial.print(" - controle_motores: ");
+  Serial.print(receivedData.controle_motores);
+  Serial.print(" - buzina: ");
+  Serial.println(receivedData.buzina);
 }
 
 void loop() {
-  /*if(c == 0){
-     // do nothing
-   }
-   if(c == 1){
-     play_song();
-   }*/
-   Serial.print("Pancho 4 - c = ");
-   Serial.println(c);
-
+  
+   c = receivedData.controle_motores;
+   velocidade = receivedData.velocidade;
+   
    switch(c) {
     case 0:
       apaga_todos();
