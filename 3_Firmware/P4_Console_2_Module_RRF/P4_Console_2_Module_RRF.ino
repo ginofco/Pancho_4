@@ -8,12 +8,27 @@
 
 #define SLAVE_ADDRESS 0x08
 #include <Wire.h>
-
 RF24 radio(8,7);                  // canal de rádio via NRF24L01
 const byte address[6] = "ROBOT";  // identificador da rádio
-
 int error = 0; 
 int LEDBLUE = 4;
+
+struct NewDataPackage {
+  boolean ps2_PSB_SELECT;  // buttons pressed, released or changed state
+  boolean ps2_PSB_START;
+  boolean ps2_PSB_PAD_UP;
+  boolean ps2_PSB_PAD_RIGHT;
+  boolean ps2_PSB_PAD_DOWN;
+  boolean ps2_PSB_PAD_LEFT;
+  boolean ps2_PSB_GREEN;
+  boolean ps2_PSB_RED;
+  boolean ps2_PSB_BLUE;
+  boolean ps2_PSB_PINK;
+  byte    ps2_PSS_RX;  // "Sticks" values
+  byte    ps2_PSS_RY;
+  byte    ps2_PSS_LX;
+  byte    ps2_PSS_LY;
+} newdataToSend;
 
 struct DataPackage {
   int button2_state;
@@ -26,11 +41,10 @@ const int PACKAGE_SIZE = sizeof(DataPackage);
 DataPackage receivedData;
 
 void setup() {
-  Wire.begin(SLAVE_ADDRESS); // join i2c bus with address #8
+  Wire.begin(SLAVE_ADDRESS);   // join i2c bus with address #8
   Wire.onReceive(receiveData); // Registra callback para recepção de dados
   // Opcional: callback
   // Wire.onRequest(sendResponse);
-     
   Serial.println("Escravo I2C pronto no endereço 0x08");
   
   pinMode(LEDBLUE, OUTPUT);
@@ -45,9 +59,7 @@ void setup() {
 
 void loop() {
   radio.write(&receivedData, sizeof(receivedData));
-
   digitalWrite(LEDBLUE, receivedData.button2_state);
-  
   //delay(50);
 }
 

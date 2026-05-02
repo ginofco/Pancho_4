@@ -12,14 +12,14 @@ byte state = 0; // Robot state:  (Variavel global usada para comunicacao i2c.)
 #define SLAVE_ADDRESS 0x08
 
 PS2X ps2x; // create PS2 Controller Class
-int error = 0; 
-byte type = 0;
+int  error   = 0; 
+byte type    = 0;
 byte vibrate = 0;
 
 struct NewDataPackage {
   boolean ps2_PSB_SELECT;  // buttons pressed, released or changed state
-  boolean ps2_PSB_L3;
-  boolean ps2_PSB_R3;
+  //boolean ps2_PSB_L3;
+  //boolean ps2_PSB_R3;
   boolean ps2_PSB_START;
   boolean ps2_PSB_PAD_UP;
   boolean ps2_PSB_PAD_RIGHT;
@@ -37,20 +37,19 @@ struct NewDataPackage {
   byte    ps2_PSS_RY;
   byte    ps2_PSS_LX;
   byte    ps2_PSS_LY;
-  byte    ps2_PSAB_PAD_RIGHT; // How strong pressed
-  byte    ps2_PSAB_PAD_UP;
-  byte    ps2_PSAB_PAD_DOWN;
-  byte    ps2_PSAB_PAD_LEFT;
-  byte    ps2_PSAB_L2;
-  byte    ps2_PSAB_R2;
-  byte    ps2_PSAB_L1;
-  byte    ps2_PSAB_R1;
-  byte    ps2_PSAB_GREEN;
-  byte    ps2_PSAB_RED;
-  byte    ps2_PSAB_BLUE;
-  byte    ps2_PSAB_PINK;
+  //byte    ps2_PSAB_PAD_RIGHT; // How strong pressed
+  //byte    ps2_PSAB_PAD_UP;
+  //byte    ps2_PSAB_PAD_DOWN;
+  //byte    ps2_PSAB_PAD_LEFT;
+  //byte    ps2_PSAB_L2;
+  //byte    ps2_PSAB_R2;
+  //byte    ps2_PSAB_L1;
+  //byte    ps2_PSAB_R1;
+  //byte    ps2_PSAB_GREEN;
+  //byte    ps2_PSAB_RED;
+  //byte    ps2_PSAB_BLUE;
+  //byte    ps2_PSAB_PINK;
 } newdataToSend;
-
 
 struct DataPackage {
   int button2_state;
@@ -82,17 +81,57 @@ void loop(){
   return; 
  else { 
   ps2x.read_gamepad(false, vibrate);  //read controller, set'vibrate' speed
+
+  newdataToSend.ps2_PSB_SELECT    = ps2x.Button(PSB_SELECT);
+  newdataToSend.ps2_PSB_START     = ps2x.Button(PSB_START);
+  newdataToSend.ps2_PSB_L2        = ps2x.Button(PSB_L2);
+  newdataToSend.ps2_PSB_R2        = ps2x.Button(PSB_R2);
+  newdataToSend.ps2_PSB_L1        = ps2x.Button(PSB_L1);
+  newdataToSend.ps2_PSB_R1        = ps2x.Button(PSB_R1);
+  newdataToSend.ps2_PSB_PAD_UP    = ps2x.Button(PSB_PAD_UP);
+  newdataToSend.ps2_PSB_PAD_RIGHT = ps2x.Button(PSB_PAD_RIGHT);
+  newdataToSend.ps2_PSB_PAD_DOWN  = ps2x.Button(PSB_PAD_DOWN);
+  newdataToSend.ps2_PSB_PAD_LEFT  = ps2x.Button(PSB_PAD_LEFT);
+  newdataToSend.ps2_PSB_GREEN     = ps2x.Button(PSB_GREEN);
+  newdataToSend.ps2_PSB_RED       = ps2x.Button(PSB_RED);
+  newdataToSend.ps2_PSB_BLUE      = ps2x.Button(PSB_BLUE);
+  newdataToSend.ps2_PSB_PINK      = ps2x.Button(PSB_PINK);
+  newdataToSend.ps2_PSS_RX        = ps2x.Analog(PSS_RX);
+  newdataToSend.ps2_PSS_RY        = ps2x.Analog(PSS_RY);
+  newdataToSend.ps2_PSS_LX        = ps2x.Analog(PSS_LX);
+  newdataToSend.ps2_PSS_LY        = ps2x.Analog(PSS_LY);  // 14 parametros p enviar
+  
+  Serial.print("Console_PS2. Select: ");  Serial.print(newdataToSend.ps2_PSB_SELECT);
+  Serial.print(" - Start: ");             Serial.print(newdataToSend.ps2_PSB_START);
+  Serial.print(" - R1: ");                Serial.print(newdataToSend.ps2_PSB_R1);
+  Serial.print(" - R2: ");                Serial.print(newdataToSend.ps2_PSB_R2);
+  Serial.print(" - L1: ");                Serial.print(newdataToSend.ps2_PSB_L1);
+  Serial.print(" - L2: ");                Serial.print(newdataToSend.ps2_PSB_L2);
+  Serial.print(" - PAD_UP: ");            Serial.print(newdataToSend.ps2_PSB_PAD_UP);
+  Serial.print(" - PAD_RIGHT: ");         Serial.print(newdataToSend.ps2_PSB_PAD_RIGHT);
+  Serial.print(" - PAD_DOWN: ");          Serial.print(newdataToSend.ps2_PSB_PAD_DOWN);
+  Serial.print(" - PAD_LEFT: ");          Serial.print(newdataToSend.ps2_PSB_PAD_LEFT);
+  Serial.print(" - GREEN: ");             Serial.print(newdataToSend.ps2_PSB_GREEN);
+  Serial.print(" - RED: ");               Serial.print(newdataToSend.ps2_PSB_RED);
+  Serial.print(" - BLUE: ");              Serial.print(newdataToSend.ps2_PSB_BLUE);
+  Serial.print(" - PINK: ");              Serial.print(newdataToSend.ps2_PSB_PINK);
+  Serial.print(" - RX: ");                Serial.print(newdataToSend.ps2_PSS_RX);
+  Serial.print(" - RY: ");                Serial.print(newdataToSend.ps2_PSS_RY);
+  Serial.print(" - LX: ");                Serial.print(newdataToSend.ps2_PSS_LX);
+  Serial.print(" - LY: ");                Serial.print(newdataToSend.ps2_PSS_LY);
+  Serial.println(" * ");
+
   dataToSend.button2_state = ps2x.Button(PSB_BLUE);
   dataToSend.button3_state = ps2x.Button(PSB_PAD_UP);
   dataToSend.button4_state = ps2x.Button(PSB_PAD_DOWN);
   dataToSend.outputValue0  = ps2x.Analog(PSS_RX);
   dataToSend.outputValue1  = ps2x.Analog(PSS_RY);
-  Serial.print("Transmissor. Mensagem: luz: ");  Serial.print(dataToSend.button2_state);
+  /*Serial.print("Transmissor. Mensagem: luz: ");  Serial.print(dataToSend.button2_state);
   Serial.print(" - direcao1: ");                 Serial.print(dataToSend.button3_state);
   Serial.print(" - direcao2:");                  Serial.print(dataToSend.button4_state); 
   Serial.print(" - volante: ");                  Serial.print(dataToSend.outputValue0);  
   Serial.print(" - aceler: ");                   Serial.print(dataToSend.outputValue1);
-  Serial.println(" * ");
+  Serial.println(" * ");*/
   // Transmitir dados via I2C
   transmitData();
  }
@@ -108,3 +147,26 @@ void transmitData() {
   }
   byte error = Wire.endTransmission();
 }
+
+
+
+//newdataToSend.ps2_PSB_L3        = ps2x.Button(PSB_L3);
+  //newdataToSend.ps2_PSB_R3        = ps2x.Button(PSB_R3);
+//newdataToSend.ps2_PSB_L2        = ps2x.Button(PSB_L2);
+  //newdataToSend.ps2_PSB_R2        = ps2x.Button(PSB_R2);
+  //newdataToSend.ps2_PSB_L1        = ps2x.Button(PSB_L1);
+  //newdataToSend.ps2_PSB_R1        = ps2x.Button(PSB_R1);
+//newdataToSend.ps2_PSAB_PAD_RIGHT   = ps2x.Analog(PSAB_PAD_RIGHT);
+  //newdataToSend.ps2_PSAB_PAD_UP      = ps2x.Analog(PSAB_PAD_UP);
+  //newdataToSend.ps2_PSAB_PAD_DOWN    = ps2x.Analog(PSAB_PAD_DOWN);
+  //newdataToSend.ps2_PSAB_PAD_LEFT    = ps2x.Analog(PSAB_PAD_LEFT);
+  //newdataToSend.ps2_PSAB_L2          = ps2x.Analog(PSAB_L2);
+  //newdataToSend.ps2_PSAB_R2          = ps2x.Analog(PSAB_R2);
+  //newdataToSend.ps2_PSAB_L1          = ps2x.Analog(PSAB_L1);
+  //newdataToSend.ps2_PSAB_R1          = ps2x.Analog(PSAB_R1);
+  //newdataToSend.ps2_PSAB_GREEN       = ps2x.Analog(PSAB_GREEN);
+  //newdataToSend.ps2_PSAB_RED         = ps2x.Analog(PSAB_RED);
+  //newdataToSend.ps2_PSAB_BLUE        = ps2x.Analog(PSAB_BLUE);
+  //newdataToSend.ps2_PSAB_PINK        = ps2x.Analog(PSAB_PINK);
+
+  

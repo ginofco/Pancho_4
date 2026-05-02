@@ -17,7 +17,6 @@
 
 RF24 radio(8,7);                  // canal de rádio via NRF24L01
 const byte address[6] = "ROBOT";  // identificador da rádio
-
 byte state = 0;
 
 int volante;
@@ -25,6 +24,29 @@ int buzina;
 int marcha_frente;
 int marcha_tras;
 int velocidade;
+
+struct NewDataPackage {
+  boolean ps2_PSB_SELECT;  // buttons pressed, released or changed state
+  //boolean ps2_PSB_L3;
+  //boolean ps2_PSB_R3;
+  boolean ps2_PSB_START;
+  boolean ps2_PSB_PAD_UP;
+  boolean ps2_PSB_PAD_RIGHT;
+  boolean ps2_PSB_PAD_DOWN;
+  boolean ps2_PSB_PAD_LEFT;
+  boolean ps2_PSB_L2;
+  boolean ps2_PSB_R2;
+  boolean ps2_PSB_L1;
+  boolean ps2_PSB_R1;
+  boolean ps2_PSB_GREEN;
+  boolean ps2_PSB_RED;
+  boolean ps2_PSB_BLUE;
+  boolean ps2_PSB_PINK;
+  byte    ps2_PSS_RX;  // "Sticks" values
+  byte    ps2_PSS_RY;
+  byte    ps2_PSS_LX;
+  byte    ps2_PSS_LY;
+} newdataToSend;
 
 struct DataPackage {
   int button2_state;
