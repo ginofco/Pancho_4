@@ -20,6 +20,10 @@ struct NewDataPackage {
   boolean ps2_PSB_PAD_RIGHT;
   boolean ps2_PSB_PAD_DOWN;
   boolean ps2_PSB_PAD_LEFT;
+  boolean ps2_PSB_L2;
+  boolean ps2_PSB_R2;
+  boolean ps2_PSB_L1;
+  boolean ps2_PSB_R1;
   boolean ps2_PSB_GREEN;
   boolean ps2_PSB_RED;
   boolean ps2_PSB_BLUE;
@@ -28,7 +32,9 @@ struct NewDataPackage {
   byte    ps2_PSS_RY;
   byte    ps2_PSS_LX;
   byte    ps2_PSS_LY;
-} newdataToSend;
+};
+const int NEW_PACKAGE_SIZE = sizeof(NewDataPackage);
+NewDataPackage newReceivedData;
 
 struct DataPackage {
   int button2_state;
@@ -42,14 +48,14 @@ DataPackage receivedData;
 
 void setup() {
   Wire.begin(SLAVE_ADDRESS);   // join i2c bus with address #8
-  Wire.onReceive(receiveData); // Registra callback para recepção de dados
+  Wire.onReceive(newReceiveData); // Registra callback para recepção de dados (interrupção)
   // Opcional: callback
   // Wire.onRequest(sendResponse);
   Serial.println("Escravo I2C pronto no endereço 0x08");
   
   pinMode(LEDBLUE, OUTPUT);
   
-  Serial.begin(9600);
+  Serial.begin(57600);
   
   radio.begin();
   radio.openWritingPipe(address);
@@ -58,11 +64,50 @@ void setup() {
 }
 
 void loop() {
-  radio.write(&receivedData, sizeof(receivedData));
-  digitalWrite(LEDBLUE, receivedData.button2_state);
+  radio.write(&newReceivedData, sizeof(newReceivedData));
+  digitalWrite(LEDBLUE, newReceivedData.ps2_PSB_BLUE);
   //delay(50);
 }
 
+// Função chamada quando dados são recebidos do I2C-mestre (Interrupção)
+void newReceiveData(int byteCount) {
+  if(byteCount == NEW_PACKAGE_SIZE) {
+    uint8_t *dataPtr = (uint8_t*)&newReceivedData;
+    for(int i = 0; i < NEW_PACKAGE_SIZE && Wire.available(); i++) {
+      dataPtr[i] = Wire.read();
+    }
+    // Processar dados recebidos
+    processNewReceivedData();
+  } else {
+    Serial.print("Tamanho inesperado: ");
+    Serial.println(byteCount);
+  }
+}
+
+void processNewReceivedData() {
+  //=== Dados Recebidos ===
+  Serial.print("Console_RRF. Select: ");  Serial.print(newReceivedData.ps2_PSB_SELECT);
+  Serial.print(" - Start: ");             Serial.print(newReceivedData.ps2_PSB_START);
+  Serial.print(" - R1: ");                Serial.print(newReceivedData.ps2_PSB_R1);
+  Serial.print(" - R2: ");                Serial.print(newReceivedData.ps2_PSB_R2);
+  Serial.print(" - L1: ");                Serial.print(newReceivedData.ps2_PSB_L1);
+  Serial.print(" - L2: ");                Serial.print(newReceivedData.ps2_PSB_L2);
+  Serial.print(" - PAD_UP: ");            Serial.print(newReceivedData.ps2_PSB_PAD_UP);
+  Serial.print(" - PAD_RIGHT: ");         Serial.print(newReceivedData.ps2_PSB_PAD_RIGHT);
+  Serial.print(" - PAD_DOWN: ");          Serial.print(newReceivedData.ps2_PSB_PAD_DOWN);
+  Serial.print(" - PAD_LEFT: ");          Serial.print(newReceivedData.ps2_PSB_PAD_LEFT);
+  Serial.print(" - GREEN: ");             Serial.print(newReceivedData.ps2_PSB_GREEN);
+  Serial.print(" - RED: ");               Serial.print(newReceivedData.ps2_PSB_RED);
+  Serial.print(" - BLUE: ");              Serial.print(newReceivedData.ps2_PSB_BLUE);
+  Serial.print(" - PINK: ");              Serial.print(newReceivedData.ps2_PSB_PINK);
+  Serial.print(" - RX: ");                Serial.print(newReceivedData.ps2_PSS_RX);
+  Serial.print(" - RY: ");                Serial.print(newReceivedData.ps2_PSS_RY);
+  Serial.print(" - LX: ");                Serial.print(newReceivedData.ps2_PSS_LX);
+  Serial.print(" - LY: ");                Serial.print(newReceivedData.ps2_PSS_LY);
+  Serial.println(" * ");
+}
+
+//////////////////////FUNÇÕES ANTIGAS////////////////////////////
 // Função chamada quando dados são recebidos do mestre
 void receiveData(int byteCount) {
   if(byteCount == PACKAGE_SIZE) {
@@ -93,6 +138,7 @@ void processReceivedData() {
   Serial.println(" * ");
   //Serial.println("=====================\n");
 }
+//////////////////////////////////////////////////////////////
 
 // Função opcional para enviar resposta quando o mestre solicitar
 void sendResponse() {

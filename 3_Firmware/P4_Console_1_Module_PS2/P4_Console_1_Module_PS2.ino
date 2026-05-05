@@ -50,6 +50,7 @@ struct NewDataPackage {
   //byte    ps2_PSAB_BLUE;
   //byte    ps2_PSAB_PINK;
 } newdataToSend;
+const int NEW_PACKAGE_SIZE = sizeof(NewDataPackage);
 
 struct DataPackage {
   int button2_state;
@@ -141,8 +142,8 @@ void loop(){
 void transmitData() {
   Wire.beginTransmission(SLAVE_ADDRESS);
   // Envia byte a byte da estrutura
-  uint8_t *dataPtr = (uint8_t*)&dataToSend;
-  for(size_t i = 0; i < PACKAGE_SIZE; i++) {
+  uint8_t *dataPtr = (uint8_t*)&newdataToSend;
+  for(size_t i = 0; i < NEW_PACKAGE_SIZE; i++) {
     Wire.write(dataPtr[i]);
   }
   byte error = Wire.endTransmission();
