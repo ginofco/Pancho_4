@@ -24,7 +24,66 @@ void setup() {
   pinMode(dirFrente, OUTPUT);
 }
 int i=0;
+
+
 void loop() {
+  
+  ////////////////////////////////////////////
+  // Exemplo do robot rrf (antigo)
+  /*
+  if (radio.available()) {
+    radio.read(&data, sizeof(data));
+    
+    volante = 255 - data.outputValue0;
+    buzina = data.button2_state;
+    marcha_frente = data.button3_state;
+    marcha_tras = data.button4_state;
+    velocidade = data.outputValue1 / 2 ;
+    
+    Serial.print("Receptor. Dados: ");    
+    Serial.print(" - volante: ");
+    Serial.print(volante);
+    Serial.print(" - buzina: ");
+    Serial.print(buzina);
+    Serial.print(" - marcha_frente: ");
+    Serial.print(marcha_frente);
+    Serial.print(" - marcha_tras: ");
+    Serial.print(marcha_tras);
+    Serial.print(" - Velocidade: ");
+    Serial.print(velocidade);
+    Serial.println(" ");
+    
+    if (buzina == 1) acende_blue();
+    else apaga_blue();
+
+    if ((marcha_frente == 1)&(marcha_tras == 0)) {
+      if ((volante > 100) & (volante<200)) move_p_frente(velocidade);
+      if (volante <= 100) move_p_esquerda_frente(velocidade);
+      if (volante >= 200) move_p_direita_frente(velocidade);
+    }
+    if ((marcha_frente == 0)&(marcha_tras == 1)) {
+      if ((volante > 100) & (volante<200)) move_p_tras(velocidade);
+      if (volante <= 100) move_p_direita_tras(velocidade);
+      if (volante >= 200) move_p_esquerda_tras(velocidade);
+    }
+    if ((marcha_frente == 0)&(marcha_tras == 0)) {
+      apaga_todos();
+    }
+    if ((marcha_frente == 1)&(marcha_tras == 1)) {
+      apaga_todos();
+    }
+    
+    Wire.beginTransmission(8); // transmit to device #8
+    state = 0;  // Default
+    if (buzina == 1) state = 1;
+    Wire.write(state);         // sends one byte
+    Wire.endTransmission();
+    delay(50);
+  }
+  */
+  
+  ////////////////////////////////////////////////////
+  // Teste com mensagem simples 
   /*
   velocidade = 200;
   
@@ -56,9 +115,9 @@ void loop() {
       break;
   }
   delay(1000);apaga_todos();delay(1000);
-*/
-}
+  */ 
 
+}
 
 
 void move_p_frente(int velocidade) {

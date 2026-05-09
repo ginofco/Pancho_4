@@ -36,16 +36,6 @@ struct NewDataPackage {
 const int NEW_PACKAGE_SIZE = sizeof(NewDataPackage);
 NewDataPackage newReceivedData;
 
-struct DataPackage {
-  int button2_state;
-  int button3_state;
-  int button4_state;
-  int outputValue0;
-  int outputValue1;
-};
-const int PACKAGE_SIZE = sizeof(DataPackage);
-DataPackage receivedData;
-
 void setup() {
   Wire.begin(SLAVE_ADDRESS);   // join i2c bus with address #8
   Wire.onReceive(newReceiveData); // Registra callback para recepção de dados (interrupção)
@@ -54,7 +44,6 @@ void setup() {
   Serial.println("Escravo I2C pronto no endereço 0x08");
   
   pinMode(LEDBLUE, OUTPUT);
-  
   Serial.begin(57600);
   
   radio.begin();
@@ -66,7 +55,6 @@ void setup() {
 void loop() {
   radio.write(&newReceivedData, sizeof(newReceivedData));
   digitalWrite(LEDBLUE, newReceivedData.ps2_PSB_BLUE);
-  //delay(50);
 }
 
 // Função chamada quando dados são recebidos do I2C-mestre (Interrupção)
@@ -107,46 +95,8 @@ void processNewReceivedData() {
   Serial.println(" * ");
 }
 
-//////////////////////FUNÇÕES ANTIGAS////////////////////////////
-// Função chamada quando dados são recebidos do mestre
-void receiveData(int byteCount) {
-  if(byteCount == PACKAGE_SIZE) {
-    uint8_t *dataPtr = (uint8_t*)&receivedData;
-    for(int i = 0; i < PACKAGE_SIZE && Wire.available(); i++) {
-      dataPtr[i] = Wire.read();
-    }
-    // Processar dados recebidos
-    processReceivedData();
-  } else {
-    Serial.print("Tamanho inesperado: ");
-    Serial.println(byteCount);
-  }
-}
-
-void processReceivedData() {
-  //Serial.println("\n=== Dados Recebidos ===");
-  Serial.print("Modulo RRF. Mensagem: luz: ");
-  Serial.print(receivedData.button2_state);
-  Serial.print(" - direcao1: ");
-  Serial.print(receivedData.button3_state);
-  Serial.print(" - direcao2:");
-  Serial.print(receivedData.button4_state);
-  Serial.print(" - volante: ");
-  Serial.print(receivedData.outputValue0);
-  Serial.print(" - aceler: ");       // Isadora
-  Serial.print(receivedData.outputValue1);
-  Serial.println(" * ");
-  //Serial.println("=====================\n");
-}
-//////////////////////////////////////////////////////////////
-
 // Função opcional para enviar resposta quando o mestre solicitar
 void sendResponse() {
   byte response = 0xAA; // Código de confirmação
   Wire.write(response);
 }
-////////////////////////////////////////////////////////////////////////
-// References:
-// miniProject
-// https://www.instructables.com/RC-Toy-Car-Using-NRF24L01/
-////////////////////////////////////////////////////////////////////////
