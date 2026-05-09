@@ -52,33 +52,19 @@ struct NewDataPackage {
 } newdataToSend;
 const int NEW_PACKAGE_SIZE = sizeof(NewDataPackage);
 
-struct DataPackage {
-  int button2_state;
-  int button3_state;
-  int button4_state;
-  int outputValue0;
-  int outputValue1;
-} dataToSend;
-const int PACKAGE_SIZE = sizeof(DataPackage);
-
 void setup(){
  Serial.begin(57600);
- // Segue trecho novo - com Wire
+
  Wire.begin(); // join i2c bus (address optional for master)
- // Fim trecho novo - com Wire
- 
- error = ps2x.config_gamepad(13,11,10,12, true, true);   
  
  //setup pins and settings:  GamePad(clock, command, attention, data, Pressures?, Rumble?)
- //check for error
+ error = ps2x.config_gamepad(13,11,10,12, true, true);
  if(error == 0) Serial.println("Found Controller, configured successful");
-  else if(error == 1) Serial.println("No controller found, check wiring, ");
-  else if(error == 2) Serial.println("Controller found but not accepting commands");
-  else if(error == 3) Serial.println("Controller refusing to enter Pressures mode.");
+  else Serial.println("No controller found, check wiring, ");
 }
 
 void loop(){
- if(error == 1) // No controller found
+ if(error != 0) // No controller found
   return; 
  else { 
   ps2x.read_gamepad(false, vibrate);  //read controller, set'vibrate' speed
@@ -122,17 +108,6 @@ void loop(){
   Serial.print(" - LY: ");                Serial.print(newdataToSend.ps2_PSS_LY);
   Serial.println(" * ");
 
-  dataToSend.button2_state = ps2x.Button(PSB_BLUE);
-  dataToSend.button3_state = ps2x.Button(PSB_PAD_UP);
-  dataToSend.button4_state = ps2x.Button(PSB_PAD_DOWN);
-  dataToSend.outputValue0  = ps2x.Analog(PSS_RX);
-  dataToSend.outputValue1  = ps2x.Analog(PSS_RY);
-  /*Serial.print("Transmissor. Mensagem: luz: ");  Serial.print(dataToSend.button2_state);
-  Serial.print(" - direcao1: ");                 Serial.print(dataToSend.button3_state);
-  Serial.print(" - direcao2:");                  Serial.print(dataToSend.button4_state); 
-  Serial.print(" - volante: ");                  Serial.print(dataToSend.outputValue0);  
-  Serial.print(" - aceler: ");                   Serial.print(dataToSend.outputValue1);
-  Serial.println(" * ");*/
   // Transmitir dados via I2C
   transmitData();
  }
@@ -148,26 +123,5 @@ void transmitData() {
   }
   byte error = Wire.endTransmission();
 }
-
-
-
-//newdataToSend.ps2_PSB_L3        = ps2x.Button(PSB_L3);
-  //newdataToSend.ps2_PSB_R3        = ps2x.Button(PSB_R3);
-//newdataToSend.ps2_PSB_L2        = ps2x.Button(PSB_L2);
-  //newdataToSend.ps2_PSB_R2        = ps2x.Button(PSB_R2);
-  //newdataToSend.ps2_PSB_L1        = ps2x.Button(PSB_L1);
-  //newdataToSend.ps2_PSB_R1        = ps2x.Button(PSB_R1);
-//newdataToSend.ps2_PSAB_PAD_RIGHT   = ps2x.Analog(PSAB_PAD_RIGHT);
-  //newdataToSend.ps2_PSAB_PAD_UP      = ps2x.Analog(PSAB_PAD_UP);
-  //newdataToSend.ps2_PSAB_PAD_DOWN    = ps2x.Analog(PSAB_PAD_DOWN);
-  //newdataToSend.ps2_PSAB_PAD_LEFT    = ps2x.Analog(PSAB_PAD_LEFT);
-  //newdataToSend.ps2_PSAB_L2          = ps2x.Analog(PSAB_L2);
-  //newdataToSend.ps2_PSAB_R2          = ps2x.Analog(PSAB_R2);
-  //newdataToSend.ps2_PSAB_L1          = ps2x.Analog(PSAB_L1);
-  //newdataToSend.ps2_PSAB_R1          = ps2x.Analog(PSAB_R1);
-  //newdataToSend.ps2_PSAB_GREEN       = ps2x.Analog(PSAB_GREEN);
-  //newdataToSend.ps2_PSAB_RED         = ps2x.Analog(PSAB_RED);
-  //newdataToSend.ps2_PSAB_BLUE        = ps2x.Analog(PSAB_BLUE);
-  //newdataToSend.ps2_PSAB_PINK        = ps2x.Analog(PSAB_PINK);
 
   

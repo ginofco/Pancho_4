@@ -1,10 +1,12 @@
-// RF Receiver (slave) test
-// Pancho 4: robot radiocontrolado
-// Codigo do Robot
+// Pancho 4: robô radiocontrolado
+// Código do Robô: Módulo "Comms RRF" - Comunicações Remotas por Radiofrequência
+// I2C Slave 7
 #include <SPI.h>
 #include <nRF24L01.h>
 #include <RF24.h>
 #include <Wire.h>
+
+#define SLAVE_ADDRESS_7 0x07
 #define LEDBLUE   2
 
 RF24 radio(8,7);                  // canal de rádio via NRF24L01
@@ -33,12 +35,14 @@ struct NewDataPackage {
 } newReceivedData;
 
 void setup() {
-  Wire.begin(); // join i2c bus (address optional for master)
-
-  pinMode(LEDBLUE,   OUTPUT);
+  Wire.begin(SLAVE_ADDRESS_7);    // join i2c bus with address #7
+  Wire.onReceive(newReceiveData); // Registra callback para recepção de dados (interrupção)
+  // Opcional: callback
+  // Wire.onRequest(sendResponse);
+  Serial.println("Escravo I2C pronto no endereço 0x08");
   
+  pinMode(LEDBLUE, OUTPUT);
   Serial.begin(57600);
-  Serial.println("Entrei");
   
   radio.begin();
   radio.openReadingPipe(0, address);
@@ -69,14 +73,26 @@ void loop() {
     Serial.print(" - LX: ");                Serial.print(newReceivedData.ps2_PSS_LX);
     Serial.print(" - LY: ");                Serial.print(newReceivedData.ps2_PSS_LY);
     Serial.println(" * ");
+
+    digitalWrite(LEDBLUE, newReceivedData.ps2_PSB_BLUE);  // Liga LED Azul
     
-    Wire.beginTransmission(8); // transmit to device #8
+    /*Wire.beginTransmission(8); // transmit to device #8
     
     state = 0;  // Default
     if (newReceivedData.ps2_PSB_BLUE == 1) state = 1;
     
     Wire.write(state);         // sends one byte
     Wire.endTransmission();
-    delay(50);
+    delay(50);*/
   }
+}
+
+void newReceiveData(int byteCount) {
+  state = Wire.read();
+}
+
+// Função opcional para enviar resposta quando o mestre solicitar
+void sendResponse() {
+  byte response = 0xAA; // Código de confirmação
+  Wire.write(response);
 }

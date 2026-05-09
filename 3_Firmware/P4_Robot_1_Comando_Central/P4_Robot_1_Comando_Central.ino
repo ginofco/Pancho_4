@@ -3,6 +3,7 @@
 // I2C Master
 
 #include <Wire.h>  // I2C
+#define SLAVE_ADDRESS_7 0x07  // Comms_RRF
 #define SLAVE_ADDRESS_8 0x08  // Manifesto
 
 byte state = 0;

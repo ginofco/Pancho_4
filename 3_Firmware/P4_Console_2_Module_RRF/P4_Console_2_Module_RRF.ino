@@ -1,17 +1,18 @@
 //////////////////////////////////////////////
-// Pancho 4: roboh radiocontrolado 
+// Pancho 4: robô radiocontrolado 
 // Console, Module RRF (I2C slave)
 //////////////////////////////////////////////
 #include <SPI.h>
 #include <nRF24L01.h>
 #include <RF24.h>
+#include <Wire.h>
 
 #define SLAVE_ADDRESS 0x08
-#include <Wire.h>
+#define LEDBLUE   4
+
 RF24 radio(8,7);                  // canal de rádio via NRF24L01
 const byte address[6] = "ROBOT";  // identificador da rádio
 int error = 0; 
-int LEDBLUE = 4;
 
 struct NewDataPackage {
   boolean ps2_PSB_SELECT;  // buttons pressed, released or changed state
