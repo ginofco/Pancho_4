@@ -7,7 +7,6 @@
 #include <Wire.h>
 
 #define SLAVE_ADDRESS_7 0x07
-#define LEDBLUE   2
 
 RF24 radio(8,7);                  // canal de rádio via NRF24L01
 const byte address[6] = "ROBOT";  // identificador da rádio
@@ -35,13 +34,14 @@ struct NewDataPackage {
 } newReceivedData;
 
 void setup() {
-  Wire.begin(SLAVE_ADDRESS_7);    // join i2c bus with address #7
-  Wire.onReceive(newReceiveData); // Registra callback para recepção de dados (interrupção)
-  // Opcional: callback
-  // Wire.onRequest(sendResponse);
-  Serial.println("Escravo I2C pronto no endereço 0x08");
+  // Registra o callback para quando o master solicitar dados
+  Wire.begin(SLAVE_ADDRESS_7);
+  Wire.onRequest(requestEvent);  // Função chamada quando master pede dados
+
+  Serial.println("Pancho 4: Módulo Comms_RRF pronto no endereço 0x07");
+
+  iniciaEstrutura();
   
-  pinMode(LEDBLUE, OUTPUT);
   Serial.begin(57600);
   
   radio.begin();
@@ -53,7 +53,44 @@ void setup() {
 void loop() {
   if (radio.available()) {
     radio.read(&newReceivedData, sizeof(newReceivedData));
-    
+
+    displayData();
+
+    delay(50); // Pequeno delay para evitar leituras muito rápidas
+  }
+}
+
+// Função chamada automaticamente quando o master solicita dados
+void requestEvent() {
+  // Envia toda a estrutura de uma vez como bytes
+  Wire.write((uint8_t*)&newReceivedData, sizeof(newReceivedData));
+  
+  // Opcional: debug
+  Serial.println("Dados enviados ao master");
+}
+
+void iniciaEstrutura() {
+  newReceivedData.ps2_PSB_SELECT    = false;
+  newReceivedData.ps2_PSB_START     = false;
+  newReceivedData.ps2_PSB_R1        = false;
+  newReceivedData.ps2_PSB_R2        = false;
+  newReceivedData.ps2_PSB_L1        = false;
+  newReceivedData.ps2_PSB_L2        = false;
+  newReceivedData.ps2_PSB_PAD_UP    = false;
+  newReceivedData.ps2_PSB_PAD_RIGHT = false;
+  newReceivedData.ps2_PSB_PAD_DOWN  = false;
+  newReceivedData.ps2_PSB_PAD_LEFT  = false;
+  newReceivedData.ps2_PSB_GREEN     = false;
+  newReceivedData.ps2_PSB_RED       = false;
+  newReceivedData.ps2_PSB_BLUE      = false;
+  newReceivedData.ps2_PSB_PINK      = false;
+  newReceivedData.ps2_PSS_RX        = 128;
+  newReceivedData.ps2_PSS_RY        = 128;
+  newReceivedData.ps2_PSS_LX        = 128;
+  newReceivedData.ps2_PSS_LY        = 128;
+}
+
+void displayData() {
     Serial.print("P4_ModuloRRF. - Select: "); Serial.print(newReceivedData.ps2_PSB_SELECT);
     Serial.print(" - Start: ");             Serial.print(newReceivedData.ps2_PSB_START);
     Serial.print(" - R1: ");                Serial.print(newReceivedData.ps2_PSB_R1);
@@ -73,26 +110,4 @@ void loop() {
     Serial.print(" - LX: ");                Serial.print(newReceivedData.ps2_PSS_LX);
     Serial.print(" - LY: ");                Serial.print(newReceivedData.ps2_PSS_LY);
     Serial.println(" * ");
-
-    digitalWrite(LEDBLUE, newReceivedData.ps2_PSB_BLUE);  // Liga LED Azul
-    
-    /*Wire.beginTransmission(8); // transmit to device #8
-    
-    state = 0;  // Default
-    if (newReceivedData.ps2_PSB_BLUE == 1) state = 1;
-    
-    Wire.write(state);         // sends one byte
-    Wire.endTransmission();
-    delay(50);*/
-  }
-}
-
-void newReceiveData(int byteCount) {
-  state = Wire.read();
-}
-
-// Função opcional para enviar resposta quando o mestre solicitar
-void sendResponse() {
-  byte response = 0xAA; // Código de confirmação
-  Wire.write(response);
 }
