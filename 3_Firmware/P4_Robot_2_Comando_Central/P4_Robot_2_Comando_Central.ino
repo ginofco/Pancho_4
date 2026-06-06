@@ -35,6 +35,7 @@ struct NewDataPackage {
   byte    ps2_PSS_LX;
   byte    ps2_PSS_LY;
 } newReceivedData;
+
 const int NEW_PACKAGE_SIZE = sizeof(NewDataPackage);
 
 void setup() {
@@ -50,11 +51,15 @@ void setup() {
 }
 
 void loop() {
-    Serial.print("Master. Recebendo dados: ");   
+    //Serial.print("Master. Recebendo dados: ");   
     // Solicita dados do slave
     requestDataFromSlave();
     
-    displayData();
+    //displayData();
+    
+    dataToSend_Manifesto.buzina           = newReceivedData.ps2_PSB_BLUE;
+    dataToSend_Manifesto.controle_motores = newReceivedData.ps2_PSS_RY;
+    dataToSend_Manifesto.velocidade       = newReceivedData.ps2_PSS_LY;
   
     Serial.print("Master. Enviando dados: ");    
     Serial.print(" - buzina: ");
@@ -67,10 +72,10 @@ void loop() {
 
     transmitData_Manifesto();
 
-    dataToSend_Manifesto.buzina++;
-    if (dataToSend_Manifesto.buzina>1) dataToSend_Manifesto.buzina=0;
-    dataToSend_Manifesto.controle_motores++;
-    if (dataToSend_Manifesto.controle_motores>9) dataToSend_Manifesto.controle_motores=0;
+    //dataToSend_Manifesto.buzina++;
+    //if (dataToSend_Manifesto.buzina>1) dataToSend_Manifesto.buzina=0;
+    //dataToSend_Manifesto.controle_motores++;
+    //if (dataToSend_Manifesto.controle_motores>9) dataToSend_Manifesto.controle_motores=0;
 
     // Aguarda um tempo antes da próxima leitura
     delay(50);
