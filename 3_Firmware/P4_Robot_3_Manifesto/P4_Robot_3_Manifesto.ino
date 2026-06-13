@@ -16,7 +16,8 @@ int volante;
 int marcha_frente;
 int marcha_tras;
 int velocidade=200;
-int comando;
+int Motor_L;
+int Motor_R;
 
 // notes in the melody:
 int melody[] = {
@@ -29,8 +30,8 @@ int noteDurations[] = {
 
 struct DataPackage {
   int buzina;
-  int controle_motores;
-  int velocidade;
+  int Motor_L_val;
+  int Motor_R_val;
 } receivedData;
 const int PACKAGE_SIZE = sizeof(DataPackage);
 
@@ -48,7 +49,7 @@ void setup() {
   pinMode(dirFrente, OUTPUT);
   pinMode(LEDBLUE, OUTPUT);
 }
-byte c1=0;
+
 byte c=0;
 //void receiveEvent(int howMany) {
 //   c = Wire.read();
@@ -72,18 +73,35 @@ void receiveData(int byteCount) {
 void processReceivedData() {
   //Serial.println("\n=== Dados Recebidos ===");
   Serial.print("Modulo Manifesto. Mensagem: velocidade: ");
-  Serial.print(receivedData.velocidade);
+  Serial.print(receivedData.Motor_L_val);
   Serial.print(" - controle_motores: ");
-  Serial.print(receivedData.controle_motores);
+  Serial.print(receivedData.Motor_R_val);
   Serial.print(" - buzina: ");
   Serial.println(receivedData.buzina);
 }
 
+
+int  velocidade_L;
+int  velocidade_R;
 void loop() {
   
-   c = receivedData.controle_motores;
-   velocidade = receivedData.velocidade;
-   
+   Motor_L = receivedData.Motor_L_val;
+   Motor_R = receivedData.Motor_R_val;
+
+   if (( Motor_L = 125 ) & ( Motor_R = 125 )) apaga_todos();
+
+   if (( Motor_L > 125 ) & ( Motor_R > 125 )) {
+     velocidade_L = 200 * ( Motor_L - 125 ) / 125;
+     velocidade_R = 200 * ( Motor_R - 125 ) / 125;
+     move_p_frente(velocidade_L, velocidade_R);
+   }
+   if (( Motor_L < 125 ) & ( Motor_R < 125 )) {
+     velocidade_L = 200 * ( 125 - Motor_L ) / 125;
+     velocidade_R = 200 * ( 125 - Motor_R ) / 125;
+     move_p_tras(velocidade_L, velocidade_R);
+   }
+
+   /*
    switch(c) {
     case 0:
       apaga_todos();
@@ -114,8 +132,9 @@ void loop() {
       //play_song();
       apaga_blue();
       break;
-  }
-  //c++; delay(500);
+  } 
+  */
+  // delay(500);
 }
 
 void play_song() {
@@ -133,17 +152,17 @@ void play_song() {
   }
 }
 
-void move_p_frente(int velocidade) {
-  acende_0(velocidade);
+void move_p_frente(int velocidade_L, int velocidade_R) {
+  acende_0(velocidade_L);
   apaga_1();
-  acende_2(velocidade);
+  acende_2(velocidade_R);
   apaga_3();
 }
-void move_p_tras(int velocidade) {
+void move_p_tras(int velocidade_L, int velocidade_R) {
   apaga_0();
-  acende_1(velocidade);  
+  acende_1(velocidade_L);  
   apaga_2();
-  acende_3(velocidade);
+  acende_3(velocidade_L);
 }
 void move_p_esquerda_frente(int velocidade) {
   acende_0(velocidade);

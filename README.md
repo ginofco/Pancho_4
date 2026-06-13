@@ -1,4 +1,4 @@
-# Projeto Pancho_4 - Arduino Day 2026
+# Projeto Pancho_4
 
 ![Status do Projeto](https://img.shields.io/badge/Status-Desenvolvimento-brightgreen)
 ![Plataforma](https://img.shields.io/badge/Plataforma-Arduino-00979D)
@@ -7,7 +7,7 @@
 
 ## 📋 Descrição do Projeto
 
-Protótipo de robô controlado remotamente via rádio utilizando módulos transceptores NRF24L01, desenvolvido para participação no Arduino Day 2026 (março/2026). O projeto inclui um chassis com ponte H e dois motores DC com rodas para movimento, com possibilidade de expansão para um braço robótico.
+Protótipo de robô controlado remotamente via rádio utilizando módulos transceptores NRF24L01, desenvolvido para participação em eventos de cultura maker, por exemplo Arduino Day. O projeto inclui um chassis com ponte H e dois motores DC com rodas para movimento, com possibilidade de expansão para um braço robótico.
 
 ## ✨ Funcionalidades
 
@@ -18,13 +18,13 @@ Protótipo de robô controlado remotamente via rádio utilizando módulos transc
 
 ## 🛠️ Tecnologias e Componentes
 
-- **Microcontroladores:** Arduino Nano/Uno
+- **Microcontroladores:** Arduino Uno R3
 - **Comunicação:** Módulos NRF24L01
-- **Motores:** 2x Motores DC com caixa de redução
+- **Motores:** 2x Motores DC com caixa de redução, servomotores
 - **Driver de Motor:** Ponte H L298N ou similar
-- **Power:** Bateria LiPo 7.4V
+- **Power:** Bateria LiPo 7.4V ou baterias de litio
 - **Produção:** Impressora 3D Ender-3 Pro
-- **Design:** FreeCAD
+- **Design:** FreeCAD, TinkerCAD
 
 ## 📁 Estrutura do Projeto
 
@@ -87,6 +87,7 @@ git clone https://github.com/[seu-usuario]/ArduinoDay2026-RoboRadio.git
 - Comunidade Maker do Rio de Janeiro
 - Fabricantes dos componentes e bibliotecas utilizadas
 - Organizadores do Arduino Day 2026
+- FabLab do PoloMaker (Rio de Janeiro)
 
 ## 📄 Licença
 

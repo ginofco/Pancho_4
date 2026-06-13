@@ -10,8 +10,8 @@ byte state = 0;
 
 struct DataPackage {
   int buzina;
-  int controle_motores;
-  int velocidade;
+  int Motor_L_val;
+  int Motor_R_val;
 } dataToSend_Manifesto;
 const int PACKAGE_SIZE = sizeof(DataPackage);
 
@@ -46,8 +46,8 @@ void setup() {
   
   Serial.println("Pancho 4 - Controle Central: ativado.");
   dataToSend_Manifesto.buzina = 0;
-  dataToSend_Manifesto.controle_motores = 0;
-  dataToSend_Manifesto.velocidade = 200;
+  dataToSend_Manifesto.Motor_L_val = 126;
+  dataToSend_Manifesto.Motor_R_val = 126;
 }
 
 void loop() {
@@ -57,17 +57,17 @@ void loop() {
     
     //displayData();
     
-    dataToSend_Manifesto.buzina           = newReceivedData.ps2_PSB_BLUE;
-    dataToSend_Manifesto.controle_motores = newReceivedData.ps2_PSS_RY;
-    dataToSend_Manifesto.velocidade       = newReceivedData.ps2_PSS_LY;
+    dataToSend_Manifesto.buzina      = newReceivedData.ps2_PSB_BLUE;
+    dataToSend_Manifesto.Motor_L_val = newReceivedData.ps2_PSS_RY;
+    dataToSend_Manifesto.Motor_R_val = newReceivedData.ps2_PSS_LY;
   
     Serial.print("Master. Enviando dados: ");    
     Serial.print(" - buzina: ");
     Serial.print(dataToSend_Manifesto.buzina);
     Serial.print(" - controle_motores: ");
-    Serial.print(dataToSend_Manifesto.controle_motores);
+    Serial.print(dataToSend_Manifesto.Motor_L_val);
     Serial.print(" - Velocidade: ");
-    Serial.print(dataToSend_Manifesto.velocidade);
+    Serial.print(dataToSend_Manifesto.Motor_R_val);
     Serial.println(" ");
 
     transmitData_Manifesto();
