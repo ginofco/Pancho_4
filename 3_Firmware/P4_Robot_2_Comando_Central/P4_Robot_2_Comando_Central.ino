@@ -46,8 +46,8 @@ void setup() {
   
   Serial.println("Pancho 4 - Controle Central: ativado.");
   dataToSend_Manifesto.buzina = 0;
-  dataToSend_Manifesto.Motor_L_val = 126;
-  dataToSend_Manifesto.Motor_R_val = 126;
+  dataToSend_Manifesto.Motor_L_val = 127;
+  dataToSend_Manifesto.Motor_R_val = 127;
 }
 
 void loop() {
@@ -64,9 +64,9 @@ void loop() {
     Serial.print("Master. Enviando dados: ");    
     Serial.print(" - buzina: ");
     Serial.print(dataToSend_Manifesto.buzina);
-    Serial.print(" - controle_motores: ");
+    Serial.print(" - Motor L: ");
     Serial.print(dataToSend_Manifesto.Motor_L_val);
-    Serial.print(" - Velocidade: ");
+    Serial.print(" - Motor R: ");
     Serial.print(dataToSend_Manifesto.Motor_R_val);
     Serial.println(" ");
 

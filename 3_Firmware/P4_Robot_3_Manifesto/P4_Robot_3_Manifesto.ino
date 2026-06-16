@@ -36,7 +36,7 @@ struct DataPackage {
 const int PACKAGE_SIZE = sizeof(DataPackage);
 
 void setup() {
-  Serial.begin(9600);
+  Serial.begin(57600);
   Serial.println("Pancho 4 - Manifesto: ativado.");
 
   Wire.begin(SLAVE_ADDRESS);    // join i2c bus with address #8
@@ -88,16 +88,16 @@ void loop() {
    Motor_L = receivedData.Motor_L_val;
    Motor_R = receivedData.Motor_R_val;
 
-   if (( Motor_L = 125 ) & ( Motor_R = 125 )) apaga_todos();
+   if (( Motor_L == 127 ) && ( Motor_R == 127 )) apaga_todos();
 
-   if (( Motor_L > 125 ) & ( Motor_R > 125 )) {
-     velocidade_L = 200 * ( Motor_L - 125 ) / 125;
-     velocidade_R = 200 * ( Motor_R - 125 ) / 125;
+   if (( Motor_L <= 127 ) && ( Motor_R <= 127 )) {
+     velocidade_L = 200 * ( 127 - Motor_L ) / 127;
+     velocidade_R = 200 * ( 127 - Motor_R ) / 127;
      move_p_frente(velocidade_L, velocidade_R);
    }
-   if (( Motor_L < 125 ) & ( Motor_R < 125 )) {
-     velocidade_L = 200 * ( 125 - Motor_L ) / 125;
-     velocidade_R = 200 * ( 125 - Motor_R ) / 125;
+   if (( Motor_L > 127 ) && ( Motor_R > 127 )) {
+     velocidade_L = 200 * ( Motor_L - 127 ) / 127;
+     velocidade_R = 200 * ( Motor_R - 127 ) / 127;
      move_p_tras(velocidade_L, velocidade_R);
    }
 
