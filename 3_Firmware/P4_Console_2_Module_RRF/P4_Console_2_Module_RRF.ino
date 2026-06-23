@@ -94,10 +94,20 @@ void processNewReceivedData() {
   Serial.print(" - LX: ");                Serial.print(newReceivedData.ps2_PSS_LX);
   Serial.print(" - LY: ");                Serial.print(newReceivedData.ps2_PSS_LY);
   Serial.println(" * ");
+
+  if (newReceivedData.ps2_PSB_BLUE) acende_blue();
+  else apaga_blue();
 }
 
 // Função opcional para enviar resposta quando o mestre solicitar
 void sendResponse() {
   byte response = 0xAA; // Código de confirmação
   Wire.write(response);
+}
+
+void acende_blue() {
+  digitalWrite(LEDBLUE, HIGH);
+}
+void apaga_blue() {
+  digitalWrite(LEDBLUE, LOW);
 }
