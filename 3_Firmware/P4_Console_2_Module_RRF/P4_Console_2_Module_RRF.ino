@@ -10,7 +10,8 @@
 #define SLAVE_ADDRESS 0x08
 #define LEDBLUE   4
 
-RF24 radio(8,7);                  // canal de rádio via NRF24L01
+RF24 radio(7,8);
+//RF24 radio(8,7);                  // canal de rádio via NRF24L01
 const byte address[6] = "ROBOT";  // identificador da rádio
 int error = 0; 
 
@@ -38,42 +39,46 @@ const int NEW_PACKAGE_SIZE = sizeof(NewDataPackage);
 NewDataPackage newReceivedData;
 
 void setup() {
-  Wire.begin(SLAVE_ADDRESS);   // join i2c bus with address #8
-  Wire.onReceive(newReceiveData); // Registra callback para recepção de dados (interrupção)
   // Opcional: callback
   // Wire.onRequest(sendResponse);
   Serial.println("Escravo I2C pronto no endereço 0x08");
   
   pinMode(LEDBLUE, OUTPUT);
-  Serial.begin(57600);
+  Serial.begin(9600);
   
   radio.begin();
   radio.openWritingPipe(address);
   radio.setPALevel(RF24_PA_MIN);
   radio.stopListening();
+
+  Wire.begin(SLAVE_ADDRESS);   // join i2c bus with address #8
+  Wire.onReceive(ReceiveData); // Registra callback para recepção de dados (interrupção)
 }
 
 void loop() {
-  radio.write(&newReceivedData, sizeof(newReceivedData));
-  digitalWrite(LEDBLUE, newReceivedData.ps2_PSB_BLUE);
+  //radio.write(&newReceivedData, sizeof(newReceivedData));
+  //digitalWrite(LEDBLUE, newReceivedData.ps2_PSB_BLUE);
+  //delay(50);
 }
 
 // Função chamada quando dados são recebidos do I2C-mestre (Interrupção)
-void newReceiveData(int byteCount) {
+void ReceiveData(int byteCount) {
   if(byteCount == NEW_PACKAGE_SIZE) {
     uint8_t *dataPtr = (uint8_t*)&newReceivedData;
     for(int i = 0; i < NEW_PACKAGE_SIZE && Wire.available(); i++) {
       dataPtr[i] = Wire.read();
     }
     // Processar dados recebidos
-    processNewReceivedData();
+    displayData();
   } else {
     Serial.print("Tamanho inesperado: ");
     Serial.println(byteCount);
   }
+  radio.write(&newReceivedData, sizeof(newReceivedData));
+  digitalWrite(LEDBLUE, newReceivedData.ps2_PSB_BLUE);
 }
 
-void processNewReceivedData() {
+void displayData() {
   //=== Dados Recebidos ===
   Serial.print("Console_RRF. Select: ");  Serial.print(newReceivedData.ps2_PSB_SELECT);
   Serial.print(" - Start: ");             Serial.print(newReceivedData.ps2_PSB_START);

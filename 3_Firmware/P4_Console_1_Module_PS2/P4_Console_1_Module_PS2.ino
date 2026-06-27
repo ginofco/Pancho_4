@@ -53,7 +53,7 @@ struct NewDataPackage {
 const int NEW_PACKAGE_SIZE = sizeof(NewDataPackage);
 
 void setup(){
- Serial.begin(57600);
+ Serial.begin(9600);
 
  Wire.begin(); // join i2c bus (address optional for master)
  

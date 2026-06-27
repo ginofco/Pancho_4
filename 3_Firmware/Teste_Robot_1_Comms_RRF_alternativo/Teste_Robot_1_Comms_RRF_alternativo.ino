@@ -4,12 +4,13 @@
 #include <SPI.h>
 #include <nRF24L01.h>
 #include <RF24.h>
-#include <Wire.h>
+//#include <Wire.h>
 
 #define SLAVE_ADDRESS_7 0x07
 #define LEDBLUE   4
 
-RF24 radio(8,7);                  // canal de rádio via NRF24L01
+RF24 radio(7,8);
+//RF24 radio(8,7);                  // canal de rádio via NRF24L01
 const byte address[6] = "ROBOT";  // identificador da rádio
 byte state = 0;
 
@@ -34,7 +35,7 @@ struct NewDataPackage {
   byte    ps2_PSS_LY;
 } newReceivedData;
 
-void setup() {  
+void setup() {
   Serial.begin(9600);
   Serial.println("Pancho 4: Módulo Comms_RRF pronto no endereço 0x07");
   // Registra o callback para quando o master solicitar dados
@@ -44,11 +45,9 @@ void setup() {
   radio.startListening();
   pinMode(LEDBLUE, OUTPUT);
   
-  Wire.begin(SLAVE_ADDRESS_7);
-  Wire.onRequest(requestEvent);  // Função chamada quando master pede dados
-
+  //Wire.begin(SLAVE_ADDRESS_7);
+  //Wire.onRequest(requestEvent);  // Função chamada quando master pede dados
   //Serial.println("Pancho 4: passei");
-
   //iniciaEstrutura();
   
 }
@@ -60,28 +59,28 @@ void loop() {
     
     displayData();
 
-    //delay(50); // Pequeno delay para evitar leituras muito rápidas
+    delay(50); // Pequeno delay para evitar leituras muito rápidas
   }
 }
 
 // Função chamada automaticamente quando o master solicita dados
-void requestEvent() {
+/*void requestEvent() {
   if (radio.available()) {
     radio.read(&newReceivedData, sizeof(newReceivedData));
     digitalWrite(LEDBLUE, newReceivedData.ps2_PSB_BLUE);
     
-    displayData();
+    //displayData();
 
     //delay(50); // Pequeno delay para evitar leituras muito rápidas
   }
   
   // Envia toda a estrutura de uma vez como bytes
-  Wire.write((uint8_t*)&newReceivedData, sizeof(newReceivedData));
+  //Wire.write((uint8_t*)&newReceivedData, sizeof(newReceivedData));
   
   // Opcional: debug
   //Serial.println("Robot_1_Comms_RRF: Dados enviados ao master");
 }
-
+*/
 void iniciaEstrutura() {
   newReceivedData.ps2_PSB_SELECT    = false;
   newReceivedData.ps2_PSB_START     = false;
