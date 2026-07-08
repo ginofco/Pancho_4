@@ -35,9 +35,15 @@ void setup() {
   pinMode(LEDBLUE,   OUTPUT);
 }
 
+int c=0; // contador
 void loop() {
-  buttonState = digitalRead(BUTTONPIN);
-  Serial.print("Transmissor: estado =");
+  //buttonState = digitalRead(BUTTONPIN);
+  if (c>100) { buttonState = 1; if (c>200) c=0; }
+  else buttonState=0;
+  c++;
+  Serial.print("Transmissor: c =");
+  Serial.print(c);
+  Serial.print("- estado =");
   Serial.print(buttonState);
   
   bool report = radio.write(&buttonState, sizeof(buttonState));
