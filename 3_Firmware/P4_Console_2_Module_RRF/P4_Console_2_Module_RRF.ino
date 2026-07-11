@@ -62,11 +62,13 @@ void setup() {
 }
 
 void loop() {
-  //radio.write(&newReceivedData, sizeof(newReceivedData));
-  buttonState = newReceivedData.ps2_PSB_BLUE;
-  
-  bool report = radio.write(&buttonState, sizeof(buttonState));
+  // Estrutura de dados recebida via interrupção (Wire.onReceive(ReceiveData))
+  buttonState = newReceivedData.ps2_PSB_BLUE; 
 
+  // Enviando estrutura de dados para o r.Pancho
+  //bool report = radio.write(&buttonState, sizeof(buttonState));
+  bool report = radio.write(&newReceivedData, sizeof(newReceivedData));
+  
   Serial.print("Transmissor: estado =");
   Serial.print(buttonState);
   if (report) Serial.println(" - RF: OK");

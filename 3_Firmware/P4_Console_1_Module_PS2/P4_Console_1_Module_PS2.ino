@@ -18,8 +18,6 @@ byte vibrate = 0;
 
 struct NewDataPackage {
   boolean ps2_PSB_SELECT;  // buttons pressed, released or changed state
-  //boolean ps2_PSB_L3;
-  //boolean ps2_PSB_R3;
   boolean ps2_PSB_START;
   boolean ps2_PSB_PAD_UP;
   boolean ps2_PSB_PAD_RIGHT;
@@ -37,18 +35,6 @@ struct NewDataPackage {
   byte    ps2_PSS_RY;
   byte    ps2_PSS_LX;
   byte    ps2_PSS_LY;
-  //byte    ps2_PSAB_PAD_RIGHT; // How strong pressed
-  //byte    ps2_PSAB_PAD_UP;
-  //byte    ps2_PSAB_PAD_DOWN;
-  //byte    ps2_PSAB_PAD_LEFT;
-  //byte    ps2_PSAB_L2;
-  //byte    ps2_PSAB_R2;
-  //byte    ps2_PSAB_L1;
-  //byte    ps2_PSAB_R1;
-  //byte    ps2_PSAB_GREEN;
-  //byte    ps2_PSAB_RED;
-  //byte    ps2_PSAB_BLUE;
-  //byte    ps2_PSAB_PINK;
 } newdataToSend;
 const int NEW_PACKAGE_SIZE = sizeof(NewDataPackage);
 
@@ -111,7 +97,7 @@ void loop(){
   // Transmitir dados via I2C
   transmitData();
  }
- delay(50);
+ //delay(50);
 }
 
 void transmitData() {

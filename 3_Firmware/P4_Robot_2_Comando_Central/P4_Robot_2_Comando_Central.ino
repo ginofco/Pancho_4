@@ -39,7 +39,7 @@ struct NewDataPackage {
 const int NEW_PACKAGE_SIZE = sizeof(NewDataPackage);
 
 void setup() {
-  Serial.begin(57600);
+  Serial.begin(9600);
   Wire.begin(); // join i2c bus (address optional for master)
   
   iniciaEstrutura();
@@ -51,16 +51,17 @@ void setup() {
 }
 
 void loop() {
-    //Serial.print("Master. Recebendo dados: ");   
+    Serial.print("Master. Recebendo dados: ");   
     // Solicita dados do slave
     requestDataFromSlave();
     
     //displayData();
+    //delay(20);
     
     dataToSend_Manifesto.buzina      = newReceivedData.ps2_PSB_BLUE;
     dataToSend_Manifesto.Motor_L_val = newReceivedData.ps2_PSS_RY;
     dataToSend_Manifesto.Motor_R_val = newReceivedData.ps2_PSS_LY;
-  
+    /*
     Serial.print("Master. Enviando dados: ");    
     Serial.print(" - buzina: ");
     Serial.print(dataToSend_Manifesto.buzina);
@@ -68,7 +69,8 @@ void loop() {
     Serial.print(dataToSend_Manifesto.Motor_L_val);
     Serial.print(" - Motor R: ");
     Serial.print(dataToSend_Manifesto.Motor_R_val);
-    Serial.println(" ");
+    Serial.println(" ");*/
+    displayData();
 
     transmitData_Manifesto();
 
@@ -88,7 +90,7 @@ void requestDataFromSlave() {
   // Verifica se recebeu a quantidade correta de bytes
   uint8_t bytesReceived = 0;
   if(Wire.available() >= sizeof(NewDataPackage)) {
-    
+    Serial.print("Leitura na interrupção ");
     // Lê os bytes diretamente para a estrutura
     for(uint8_t i = 0; i < sizeof(NewDataPackage); i++) {
       ((uint8_t*)&newReceivedData)[i] = Wire.read();
@@ -96,14 +98,15 @@ void requestDataFromSlave() {
     bytesReceived = sizeof(NewDataPackage);
     
     // Processa os dados recebidos
-    //displayReceivedData();
+    //displayData();
     
   } else {
     Serial.print("Erro: Recebido apenas ");
     Serial.print(Wire.available());
     Serial.print(" de ");
     Serial.print(sizeof(NewDataPackage));
-    Serial.println(" bytes esperados");
+    Serial.print(" bytes esperados");
+    //Serial.println(" bytes esperados");
   }
 }
 
