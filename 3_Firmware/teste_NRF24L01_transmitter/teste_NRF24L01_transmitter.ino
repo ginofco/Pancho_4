@@ -6,6 +6,7 @@
 #include <SPI.h>
 #include <nRF24L01.h>
 #include <RF24.h>
+#include <Wire.h>
 
 #define BUTTONPIN   3
 #define LEDBLUE     4
@@ -22,7 +23,7 @@ int buttonState = 0;
 void setup() {
   Serial.begin(9600);
   Serial.println("Transmissor: inicinando envio.");
-  //radio.begin();
+
   if (!radio.begin()) {
     Serial.println(F("radio hardware is not responding!!"));
     while (1) {}  // hold in infinite loop

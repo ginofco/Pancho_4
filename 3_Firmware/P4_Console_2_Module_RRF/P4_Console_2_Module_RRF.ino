@@ -9,11 +9,16 @@
 
 #define SLAVE_ADDRESS 0x08
 #define LEDBLUE   4
+            
+#define CE_PIN 7
+#define CSN_PIN 8
+// instantiate an object for the nRF24L01 transceiver
+RF24 radio(CE_PIN, CSN_PIN);  // CE, CSN
 
-RF24 radio(7,8);
-//RF24 radio(8,7);                  // canal de rádio via NRF24L01
-const byte address[6] = "ROBOT";  // identificador da rádio
+// canal de rádio via NRF24L01
+const byte address[6] = "PNCHO";  // identificador da rádio
 int error = 0; 
+int buttonState = 0;
 
 struct NewDataPackage {
   boolean ps2_PSB_SELECT;  // buttons pressed, released or changed state
@@ -39,25 +44,35 @@ const int NEW_PACKAGE_SIZE = sizeof(NewDataPackage);
 NewDataPackage newReceivedData;
 
 void setup() {
-  // Opcional: callback
-  // Wire.onRequest(sendResponse);
-  Serial.println("Escravo I2C pronto no endereço 0x08");
-  
-  pinMode(LEDBLUE, OUTPUT);
   Serial.begin(9600);
-  
-  radio.begin();
+  Serial.println("Console - Transmissor RF: inicinando envio.");
+
+  if (!radio.begin()) {
+    Serial.println(F("radio hardware is not responding!!"));
+    while (1) {}  // hold in infinite loop
+  }
   radio.openWritingPipe(address);
   radio.setPALevel(RF24_PA_MIN);
   radio.stopListening();
 
   Wire.begin(SLAVE_ADDRESS);   // join i2c bus with address #8
   Wire.onReceive(ReceiveData); // Registra callback para recepção de dados (interrupção)
+    
+  pinMode(LEDBLUE, OUTPUT);
 }
 
 void loop() {
   //radio.write(&newReceivedData, sizeof(newReceivedData));
-  //digitalWrite(LEDBLUE, newReceivedData.ps2_PSB_BLUE);
+  buttonState = newReceivedData.ps2_PSB_BLUE;
+  
+  bool report = radio.write(&buttonState, sizeof(buttonState));
+
+  Serial.print("Transmissor: estado =");
+  Serial.print(buttonState);
+  if (report) Serial.println(" - RF: OK");
+  else Serial.println(" - RF: FAIL");
+  
+  digitalWrite(LEDBLUE, buttonState);
   //delay(50);
 }
 
@@ -69,13 +84,13 @@ void ReceiveData(int byteCount) {
       dataPtr[i] = Wire.read();
     }
     // Processar dados recebidos
-    displayData();
+    //displayData();
   } else {
     Serial.print("Tamanho inesperado: ");
     Serial.println(byteCount);
   }
-  radio.write(&newReceivedData, sizeof(newReceivedData));
-  digitalWrite(LEDBLUE, newReceivedData.ps2_PSB_BLUE);
+  //radio.write(&newReceivedData, sizeof(newReceivedData));
+  //digitalWrite(LEDBLUE, newReceivedData.ps2_PSB_BLUE);
 }
 
 void displayData() {
