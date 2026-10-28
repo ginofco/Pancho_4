@@ -3,10 +3,11 @@
 //#include <Wire.h>
 //byte state = 0;
 
-#define dirFrente 5
-#define dirTras 3
-#define esqFrente 9
-#define esqTras 6
+// Pinos PWM para controlar a "velocidade"
+#define dirTras     3
+#define dirFrente   5
+#define esqTras     6
+#define esqFrente   9
 
 int volante;
 int marcha_frente;
@@ -19,14 +20,24 @@ void setup() {
   //Wire.begin(); // join i2c bus (address optional for master)
 
   pinMode(esqFrente, OUTPUT);
-  pinMode(esqTras, OUTPUT);
-  pinMode(dirTras, OUTPUT);
+  pinMode(esqTras,   OUTPUT);
+  pinMode(dirTras,   OUTPUT);
   pinMode(dirFrente, OUTPUT);
+
+  pisca_N_vezes( 5 );
 }
-int i=0;
 
 
 void loop() {
+  velocidade = 200;
+  int N;
+  // teste super simples
+  apaga_todos();
+  // pisca 1 vez e aciona para frente
+  pisca_N_vezes( 1 );
+  move_p_frente( velocidade );
+  delay(1000);
+  
   
   ////////////////////////////////////////////
   // Exemplo do robot rrf (antigo)
@@ -116,9 +127,16 @@ void loop() {
   }
   delay(1000);apaga_todos();delay(1000);
   */ 
-
 }
 
+void pisca_N_vezes( int N ) {
+  for (int i; i < N; i++) {
+    digitalWrite(LED_BUILTIN, HIGH);  
+    delay(500);
+    digitalWrite(LED_BUILTIN, LOW);
+    delay(500);
+  }
+}
 
 void move_p_frente(int velocidade) {
   acende_0(velocidade);

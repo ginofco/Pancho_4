@@ -1,10 +1,18 @@
 // Pancho 4: robot radiocontrolado
 // Codigo do Robot - Módulo "Controle Central"
 // I2C Master
+// SLAVE_ADDRESS_7  0x07  // Comms_RRF
+// SLAVE_ADDRESS_8  0x08  // Manifesto (buzzer e display)
+// SLAVE_ADDRESS_9  0x09  // Casa_das_Maquinas
+// SLAVE_ADDRESS_10 0x10  // Braço_Robótico
+// SLAVE_ADDRESS_11 0x11  // Touchy
 
 #include <Wire.h>  // I2C
-#define SLAVE_ADDRESS_7 0x07  // Comms_RRF
-#define SLAVE_ADDRESS_8 0x08  // Manifesto
+#define SLAVE_ADDRESS_7  0x07
+#define SLAVE_ADDRESS_8  0x08
+#define SLAVE_ADDRESS_9  0x09
+#define SLAVE_ADDRESS_10 0x10
+#define SLAVE_ADDRESS_11 0x11
 
 byte state = 0;
 
